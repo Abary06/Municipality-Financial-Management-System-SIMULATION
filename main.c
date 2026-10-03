@@ -78,6 +78,12 @@ void addAsset(void);
 void displayAssets(void);
 void searchAsset(void);
 
+void reportMenu(void);
+void employeeReport(void);
+void budgetReport(void);
+void supplierReport(void);
+void assetReport(void);
+
 int main(void)
 {
     mainMenu();
@@ -121,7 +127,7 @@ void mainMenu(void)
                 break;
 
             case 5:
-                printf("\nReports are not available yet.\n");
+                reportMenu();
                 break;
 
             case 0:
@@ -699,5 +705,203 @@ void searchAsset(void)
     if (!found)
     {
         printf("Asset not found.\n");
+    }
+}
+
+/* Reports */
+void reportMenu(void)
+{
+    int choice;
+
+    do
+    {
+        printf("\n===== REPORTS =====\n");
+        printf("1. Employee Report\n");
+        printf("2. Budget Report\n");
+        printf("3. Supplier Report\n");
+        printf("4. Asset Report\n");
+        printf("0. Back\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                employeeReport();
+                break;
+
+            case 2:
+                budgetReport();
+                break;
+
+            case 3:
+                supplierReport();
+                break;
+
+            case 4:
+                assetReport();
+                break;
+
+            case 0:
+                printf("Returning to main menu...\n");
+                break;
+
+            default:
+                printf("Invalid choice.\n");
+        }
+
+    } while (choice != 0);
+}
+
+/* Employee Report */
+void employeeReport(void)
+{
+    int i;
+    float totalSalary = 0;
+    float averageSalary;
+    float highestSalary = 0;
+    float lowestSalary = 0;
+    float salary;
+
+    if (employeeCount == 0)
+    {
+        printf("\nNo employee data available.\n");
+        return;
+    }
+
+    for (i = 0; i < employeeCount; i++)
+    {
+        salary = employees[i].basicSalary
+               + employees[i].housingAllowance
+               + employees[i].transportAllowance;
+
+        totalSalary += salary;
+
+        if (i == 0)
+        {
+            highestSalary = salary;
+            lowestSalary = salary;
+        }
+
+        if (salary > highestSalary)
+        {
+            highestSalary = salary;
+        }
+
+        if (salary < lowestSalary)
+        {
+            lowestSalary = salary;
+        }
+    }
+
+    averageSalary = totalSalary / employeeCount;
+
+    printf("\n===== EMPLOYEE REPORT =====\n");
+    printf("Total Employees: %d\n", employeeCount);
+    printf("Average Salary: %.2f\n", averageSalary);
+    printf("Highest Salary: %.2f\n", highestSalary);
+    printf("Lowest Salary: %.2f\n", lowestSalary);
+}
+
+/* Budget Report */
+void budgetReport(void)
+{
+    int i;
+    float totalAllocated = 0;
+    float totalExpenditure = 0;
+    float totalRemaining;
+    int overBudget = 0;
+
+    if (budgetCount == 0)
+    {
+        printf("\nNo budget data available.\n");
+        return;
+    }
+
+    for (i = 0; i < budgetCount; i++)
+    {
+        totalAllocated += budgets[i].allocated;
+        totalExpenditure += budgets[i].expenditure;
+
+        if (budgets[i].expenditure > budgets[i].allocated)
+        {
+            overBudget++;
+        }
+    }
+
+    totalRemaining = totalAllocated - totalExpenditure;
+
+    printf("\n===== BUDGET REPORT =====\n");
+    printf("Total Allocated: %.2f\n", totalAllocated);
+    printf("Total Expenditure: %.2f\n", totalExpenditure);
+    printf("Total Remaining: %.2f\n", totalRemaining);
+    printf("Departments Over Budget: %d\n", overBudget);
+
+    if (overBudget > 0)
+    {
+        printf("\nDepartments Exceeding Budget:\n");
+
+        for (i = 0; i < budgetCount; i++)
+        {
+            if (budgets[i].expenditure > budgets[i].allocated)
+            {
+                printf("- %s\n", budgets[i].department);
+            }
+        }
+    }
+}
+
+/* Supplier Report */
+void supplierReport(void)
+{
+    int i;
+
+    if (supplierCount == 0)
+    {
+        printf("\nNo supplier data available.\n");
+        return;
+    }
+
+    printf("\n===== SUPPLIER REPORT =====\n");
+    printf("Total Suppliers: %d\n", supplierCount);
+
+    for (i = 0; i < supplierCount; i++)
+    {
+        printf("\nSupplier ID: %d\n", suppliers[i].id);
+        printf("Name: %s\n", suppliers[i].name);
+        printf("Email: %s\n", suppliers[i].email);
+        printf("Telephone: %s\n", suppliers[i].telephone);
+        printf("Town/Location: %s\n", suppliers[i].town);
+    }
+}
+
+/* Asset Report */
+void assetReport(void)
+{
+    int i;
+    float totalValue = 0;
+
+    if (assetCount == 0)
+    {
+        printf("\nNo asset data available.\n");
+        return;
+    }
+
+    for (i = 0; i < assetCount; i++)
+    {
+        totalValue += assets[i].purchaseValue;
+    }
+
+    printf("\n===== ASSET REPORT =====\n");
+    printf("Total Assets: %d\n", assetCount);
+    printf("Total Purchase Value: %.2f\n", totalValue);
+
+    for (i = 0; i < assetCount; i++)
+    {
+        printf("\nAsset ID: %d\n", assets[i].id);
+        printf("Name: %s\n", assets[i].name);
+        printf("Type: %s\n", assets[i].type);
+        printf("Department: %s\n", assets[i].department);
+        printf("Condition: %s\n", assets[i].condition);
     }
 }
