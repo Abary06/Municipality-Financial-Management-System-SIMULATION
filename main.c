@@ -6,42 +6,47 @@
 #define MAX_SUPPLIERS 100
 #define MAX_ASSETS 100
 
-typedef struct
-{
+/* =========================
+   STRUCTURES
+   ========================= */
+
+typedef struct {
     int id;
-    char name[50];
-    char department[50];
+    char name[100];
+    char department[100];
     float basicSalary;
     float housingAllowance;
     float transportAllowance;
 } Employee;
 
-typedef struct
-{
+typedef struct {
     int id;
-    char department[50];
-    float allocated;
+    char department[100];
+    float allocatedBudget;
     float expenditure;
 } Budget;
 
-typedef struct
-{
+typedef struct {
     int id;
-    char name[50];
+    char name[100];
     char email[100];
     char telephone[30];
-    char town[50];
+    char location[100];
 } Supplier;
 
-typedef struct
-{
+typedef struct {
     int id;
-    char name[50];
-    char type[50];
+    char name[100];
+    char type[100];
     float purchaseValue;
-    char department[50];
-    char condition[30];
+    char department[100];
+    char condition[100];
 } Asset;
+
+
+/* =========================
+   ARRAYS AND COUNTERS
+   ========================= */
 
 Employee employees[MAX_EMPLOYEES];
 Budget budgets[MAX_BUDGETS];
@@ -53,36 +58,57 @@ int budgetCount = 0;
 int supplierCount = 0;
 int assetCount = 0;
 
-/* Function prototypes */
-void mainMenu(void);
 
+/* =========================
+   FUNCTION DECLARATIONS
+   ========================= */
+
+/* Menus */
+void mainMenu(void);
 void employeeMenu(void);
+void budgetMenu(void);
+void supplierMenu(void);
+void assetMenu(void);
+void reportMenu(void);
+
+/* Employees */
 void addEmployee(void);
 void displayEmployees(void);
 void searchEmployee(void);
-void calculateSalary(void);
+float calculateSalary(Employee employee);
 
-void budgetMenu(void);
+/* Budgets */
 void addBudget(void);
 void displayBudgets(void);
 void searchBudget(void);
-void calculateRemainingBudget(void);
+float calculateRemainingBudget(Budget budget);
 
-void supplierMenu(void);
+/* Suppliers */
 void addSupplier(void);
 void displaySuppliers(void);
 void searchSupplier(void);
+void compareSuppliers(void);
 
-void assetMenu(void);
+/* Assets */
 void addAsset(void);
 void displayAssets(void);
 void searchAsset(void);
 
-void reportMenu(void);
+/* Reports */
 void employeeReport(void);
 void budgetReport(void);
 void supplierReport(void);
 void assetReport(void);
+
+/* String / validation helpers */
+void readNonEmptyString(char text[], int size);
+void copyText(char destination[], char source[]);
+void buildSupplierContact(Supplier supplier, char result[]);
+
+
+/* =========================
+   MAIN
+   ========================= */
 
 int main(void)
 {
@@ -91,25 +117,29 @@ int main(void)
     return 0;
 }
 
-/* Main Menu */
+
+/* =========================
+   MAIN MENU
+   ========================= */
+
 void mainMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== MUNICIPAL FINANCIAL MANAGEMENT SYSTEM =====\n");
+    do {
+        printf("\n========================================\n");
+        printf(" MUNICIPAL FINANCIAL MANAGEMENT SYSTEM\n");
+        printf("========================================\n");
         printf("1. Employee Management\n");
         printf("2. Budget Management\n");
         printf("3. Supplier Management\n");
         printf("4. Asset Management\n");
         printf("5. Reports\n");
         printf("0. Exit\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 employeeMenu();
                 break;
@@ -135,30 +165,32 @@ void mainMenu(void)
                 break;
 
             default:
-                printf("\nInvalid choice.\n");
+                printf("\nInvalid choice. Please try again.\n");
         }
 
     } while (choice != 0);
 }
 
-/* Employee Management */
+
+/* =========================
+   EMPLOYEE MENU
+   ========================= */
+
 void employeeMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== EMPLOYEE MANAGEMENT =====\n");
+    do {
+        printf("\n========== EMPLOYEE MANAGEMENT ==========\n");
         printf("1. Add Employee\n");
         printf("2. Display Employees\n");
         printf("3. Search Employee\n");
-        printf("4. Calculate Salary\n");
+        printf("4. Calculate Employee Salary\n");
         printf("0. Back\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 addEmployee();
                 break;
@@ -172,177 +204,204 @@ void employeeMenu(void)
                 break;
 
             case 4:
-                calculateSalary();
+                if (employeeCount == 0) {
+                    printf("\nNo employees available.\n");
+                } else {
+                    int id;
+                    int found = 0;
+
+                    printf("\nEnter Employee ID: ");
+                    scanf("%d", &id);
+
+                    for (int i = 0; i < employeeCount; i++) {
+                        if (employees[i].id == id) {
+                            printf("\nEmployee: %s\n", employees[i].name);
+                            printf("Total Salary: N$%.2f\n",
+                                   calculateSalary(employees[i]));
+                            found = 1;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        printf("\nEmployee not found.\n");
+                    }
+                }
                 break;
 
             case 0:
-                printf("Returning to main menu...\n");
                 break;
 
             default:
-                printf("Invalid choice.\n");
+                printf("\nInvalid choice.\n");
         }
 
     } while (choice != 0);
 }
 
+
+/* =========================
+   ADD EMPLOYEE
+   ========================= */
+
 void addEmployee(void)
 {
-    if (employeeCount >= MAX_EMPLOYEES)
-    {
-        printf("Employee storage is full.\n");
+    if (employeeCount >= MAX_EMPLOYEES) {
+        printf("\nEmployee storage is full.\n");
         return;
     }
 
-    printf("\nEnter Employee ID: ");
-    scanf("%d", &employees[employeeCount].id);
+    printf("\n========== ADD EMPLOYEE ==========\n");
 
-    if (employees[employeeCount].id <= 0)
-    {
-        printf("Invalid Employee ID.\n");
-        return;
-    }
+    do {
+        printf("Enter Employee ID: ");
+        scanf("%d", &employees[employeeCount].id);
+
+        if (employees[employeeCount].id <= 0) {
+            printf("Employee ID must be greater than 0.\n");
+        }
+
+    } while (employees[employeeCount].id <= 0);
 
     printf("Enter Employee Name: ");
-    scanf(" %[^\n]", employees[employeeCount].name);
+    readNonEmptyString(employees[employeeCount].name, 100);
 
     printf("Enter Department: ");
-    scanf(" %[^\n]", employees[employeeCount].department);
+    readNonEmptyString(employees[employeeCount].department, 100);
 
-    printf("Enter Basic Salary: ");
-    scanf("%f", &employees[employeeCount].basicSalary);
+    do {
+        printf("Enter Basic Salary: ");
+        scanf("%f", &employees[employeeCount].basicSalary);
 
-    if (employees[employeeCount].basicSalary < 0)
-    {
-        printf("Salary cannot be negative.\n");
-        return;
-    }
+        if (employees[employeeCount].basicSalary < 0) {
+            printf("Salary cannot be negative.\n");
+        }
 
-    printf("Enter Housing Allowance: ");
-    scanf("%f", &employees[employeeCount].housingAllowance);
+    } while (employees[employeeCount].basicSalary < 0);
 
-    if (employees[employeeCount].housingAllowance < 0)
-    {
-        printf("Housing allowance cannot be negative.\n");
-        return;
-    }
+    do {
+        printf("Enter Housing Allowance: ");
+        scanf("%f", &employees[employeeCount].housingAllowance);
 
-    printf("Enter Transport Allowance: ");
-    scanf("%f", &employees[employeeCount].transportAllowance);
+        if (employees[employeeCount].housingAllowance < 0) {
+            printf("Allowance cannot be negative.\n");
+        }
 
-    if (employees[employeeCount].transportAllowance < 0)
-    {
-        printf("Transport allowance cannot be negative.\n");
-        return;
-    }
+    } while (employees[employeeCount].housingAllowance < 0);
+
+    do {
+        printf("Enter Transport Allowance: ");
+        scanf("%f", &employees[employeeCount].transportAllowance);
+
+        if (employees[employeeCount].transportAllowance < 0) {
+            printf("Allowance cannot be negative.\n");
+        }
+
+    } while (employees[employeeCount].transportAllowance < 0);
 
     employeeCount++;
 
-    printf("Employee added successfully.\n");
+    printf("\nEmployee added successfully.\n");
 }
+
+
+/* =========================
+   DISPLAY EMPLOYEES
+   ========================= */
 
 void displayEmployees(void)
 {
-    int i;
-
-    if (employeeCount == 0)
-    {
+    if (employeeCount == 0) {
         printf("\nNo employees available.\n");
         return;
     }
 
-    printf("\n===== EMPLOYEE LIST =====\n");
+    printf("\n========== EMPLOYEE LIST ==========\n");
 
-    for (i = 0; i < employeeCount; i++)
-    {
+    for (int i = 0; i < employeeCount; i++) {
         printf("\nEmployee ID: %d\n", employees[i].id);
         printf("Name: %s\n", employees[i].name);
         printf("Department: %s\n", employees[i].department);
-        printf("Basic Salary: %.2f\n", employees[i].basicSalary);
-        printf("Housing Allowance: %.2f\n", employees[i].housingAllowance);
-        printf("Transport Allowance: %.2f\n", employees[i].transportAllowance);
+        printf("Basic Salary: N$%.2f\n", employees[i].basicSalary);
+        printf("Housing Allowance: N$%.2f\n",
+               employees[i].housingAllowance);
+        printf("Transport Allowance: N$%.2f\n",
+               employees[i].transportAllowance);
+        printf("Total Salary: N$%.2f\n",
+               calculateSalary(employees[i]));
     }
 }
 
+
+/* =========================
+   SEARCH EMPLOYEE
+   ========================= */
+
 void searchEmployee(void)
 {
-    int id;
-    int i;
+    char searchName[100];
     int found = 0;
 
-    printf("\nEnter Employee ID to search: ");
-    scanf("%d", &id);
+    if (employeeCount == 0) {
+        printf("\nNo employees available.\n");
+        return;
+    }
 
-    for (i = 0; i < employeeCount; i++)
-    {
-        if (employees[i].id == id)
-        {
+    printf("\nEnter employee name to search: ");
+    readNonEmptyString(searchName, 100);
+
+    for (int i = 0; i < employeeCount; i++) {
+
+        /* strcmp() compares two strings */
+        if (strcmp(employees[i].name, searchName) == 0) {
             printf("\nEmployee found!\n");
             printf("ID: %d\n", employees[i].id);
             printf("Name: %s\n", employees[i].name);
             printf("Department: %s\n", employees[i].department);
+            printf("Total Salary: N$%.2f\n",
+                   calculateSalary(employees[i]));
 
             found = 1;
-            break;
         }
     }
 
-    if (!found)
-    {
-        printf("Employee not found.\n");
+    if (!found) {
+        printf("\nEmployee not found.\n");
     }
 }
 
-void calculateSalary(void)
+
+/* =========================
+   CALCULATE SALARY
+   ========================= */
+
+float calculateSalary(Employee employee)
 {
-    int id;
-    int i;
-    int found = 0;
-    float totalSalary;
-
-    printf("\nEnter Employee ID: ");
-    scanf("%d", &id);
-
-    for (i = 0; i < employeeCount; i++)
-    {
-        if (employees[i].id == id)
-        {
-            totalSalary = employees[i].basicSalary
-                        + employees[i].housingAllowance
-                        + employees[i].transportAllowance;
-
-            printf("\nEmployee: %s\n", employees[i].name);
-            printf("Total Salary: %.2f\n", totalSalary);
-
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        printf("Employee not found.\n");
-    }
+    return employee.basicSalary
+         + employee.housingAllowance
+         + employee.transportAllowance;
 }
 
-/* Budget Management */
+
+/* =========================
+   BUDGET MENU
+   ========================= */
+
 void budgetMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== BUDGET MANAGEMENT =====\n");
+    do {
+        printf("\n========== BUDGET MANAGEMENT ==========\n");
         printf("1. Add Budget\n");
         printf("2. Display Budgets\n");
         printf("3. Search Budget\n");
         printf("4. Calculate Remaining Budget\n");
         printf("0. Back\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 addBudget();
                 break;
@@ -356,170 +415,194 @@ void budgetMenu(void)
                 break;
 
             case 4:
-                calculateRemainingBudget();
+                if (budgetCount == 0) {
+                    printf("\nNo budgets available.\n");
+                } else {
+                    int id;
+                    int found = 0;
+
+                    printf("\nEnter Budget ID: ");
+                    scanf("%d", &id);
+
+                    for (int i = 0; i < budgetCount; i++) {
+                        if (budgets[i].id == id) {
+                            printf("\nRemaining Budget: N$%.2f\n",
+                                   calculateRemainingBudget(budgets[i]));
+                            found = 1;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        printf("\nBudget not found.\n");
+                    }
+                }
                 break;
 
             case 0:
-                printf("Returning to main menu...\n");
                 break;
 
             default:
-                printf("Invalid choice.\n");
+                printf("\nInvalid choice.\n");
         }
 
     } while (choice != 0);
 }
 
+
+/* =========================
+   ADD BUDGET
+   ========================= */
+
 void addBudget(void)
 {
-    if (budgetCount >= MAX_BUDGETS)
-    {
-        printf("Budget storage is full.\n");
+    if (budgetCount >= MAX_BUDGETS) {
+        printf("\nBudget storage is full.\n");
         return;
     }
 
-    printf("\nEnter Budget ID: ");
-    scanf("%d", &budgets[budgetCount].id);
+    printf("\n========== ADD BUDGET ==========\n");
 
-    if (budgets[budgetCount].id <= 0)
-    {
-        printf("Invalid Budget ID.\n");
-        return;
-    }
+    do {
+        printf("Enter Budget ID: ");
+        scanf("%d", &budgets[budgetCount].id);
+
+        if (budgets[budgetCount].id <= 0) {
+            printf("Budget ID must be greater than 0.\n");
+        }
+
+    } while (budgets[budgetCount].id <= 0);
 
     printf("Enter Department: ");
-    scanf(" %[^\n]", budgets[budgetCount].department);
+    readNonEmptyString(budgets[budgetCount].department, 100);
 
-    printf("Enter Allocated Budget: ");
-    scanf("%f", &budgets[budgetCount].allocated);
+    do {
+        printf("Enter Allocated Budget: ");
+        scanf("%f", &budgets[budgetCount].allocatedBudget);
 
-    if (budgets[budgetCount].allocated < 0)
-    {
-        printf("Allocated budget cannot be negative.\n");
-        return;
-    }
+        if (budgets[budgetCount].allocatedBudget < 0) {
+            printf("Budget cannot be negative.\n");
+        }
 
-    printf("Enter Expenditure: ");
-    scanf("%f", &budgets[budgetCount].expenditure);
+    } while (budgets[budgetCount].allocatedBudget < 0);
 
-    if (budgets[budgetCount].expenditure < 0)
-    {
-        printf("Expenditure cannot be negative.\n");
-        return;
-    }
+    do {
+        printf("Enter Expenditure: ");
+        scanf("%f", &budgets[budgetCount].expenditure);
+
+        if (budgets[budgetCount].expenditure < 0) {
+            printf("Expenditure cannot be negative.\n");
+        }
+
+    } while (budgets[budgetCount].expenditure < 0);
 
     budgetCount++;
 
-    printf("Budget added successfully.\n");
+    printf("\nBudget added successfully.\n");
 }
+
+
+/* =========================
+   DISPLAY BUDGETS
+   ========================= */
 
 void displayBudgets(void)
 {
-    int i;
-
-    if (budgetCount == 0)
-    {
+    if (budgetCount == 0) {
         printf("\nNo budgets available.\n");
         return;
     }
 
-    printf("\n===== BUDGET LIST =====\n");
+    printf("\n========== BUDGET LIST ==========\n");
 
-    for (i = 0; i < budgetCount; i++)
-    {
+    for (int i = 0; i < budgetCount; i++) {
+        float remaining =
+            calculateRemainingBudget(budgets[i]);
+
         printf("\nBudget ID: %d\n", budgets[i].id);
         printf("Department: %s\n", budgets[i].department);
-        printf("Allocated Budget: %.2f\n", budgets[i].allocated);
-        printf("Expenditure: %.2f\n", budgets[i].expenditure);
+        printf("Allocated Budget: N$%.2f\n",
+               budgets[i].allocatedBudget);
+        printf("Expenditure: N$%.2f\n",
+               budgets[i].expenditure);
+        printf("Remaining Budget: N$%.2f\n", remaining);
+
+        if (budgets[i].expenditure > budgets[i].allocatedBudget) {
+            printf("Status: OVER BUDGET\n");
+        } else {
+            printf("Status: WITHIN BUDGET\n");
+        }
     }
 }
+
+
+/* =========================
+   SEARCH BUDGET
+   ========================= */
 
 void searchBudget(void)
 {
-    int id;
-    int i;
+    char department[100];
     int found = 0;
 
-    printf("\nEnter Budget ID to search: ");
-    scanf("%d", &id);
+    if (budgetCount == 0) {
+        printf("\nNo budgets available.\n");
+        return;
+    }
 
-    for (i = 0; i < budgetCount; i++)
-    {
-        if (budgets[i].id == id)
-        {
+    printf("\nEnter department to search: ");
+    readNonEmptyString(department, 100);
+
+    for (int i = 0; i < budgetCount; i++) {
+
+        if (strcmp(budgets[i].department, department) == 0) {
             printf("\nBudget found!\n");
             printf("ID: %d\n", budgets[i].id);
             printf("Department: %s\n", budgets[i].department);
-            printf("Allocated Budget: %.2f\n", budgets[i].allocated);
-            printf("Expenditure: %.2f\n", budgets[i].expenditure);
+            printf("Allocated: N$%.2f\n",
+                   budgets[i].allocatedBudget);
+            printf("Expenditure: N$%.2f\n",
+                   budgets[i].expenditure);
 
             found = 1;
-            break;
         }
     }
 
-    if (!found)
-    {
-        printf("Budget not found.\n");
+    if (!found) {
+        printf("\nBudget not found.\n");
     }
 }
 
-void calculateRemainingBudget(void)
+
+/* =========================
+   CALCULATE REMAINING BUDGET
+   ========================= */
+
+float calculateRemainingBudget(Budget budget)
 {
-    int id;
-    int i;
-    int found = 0;
-    float remaining;
-
-    printf("\nEnter Budget ID: ");
-    scanf("%d", &id);
-
-    for (i = 0; i < budgetCount; i++)
-    {
-        if (budgets[i].id == id)
-        {
-            remaining = budgets[i].allocated - budgets[i].expenditure;
-
-            printf("\nDepartment: %s\n", budgets[i].department);
-            printf("Remaining Budget: %.2f\n", remaining);
-
-            if (remaining >= 0)
-            {
-                printf("Status: Within Budget\n");
-            }
-            else
-            {
-                printf("Status: Over Budget\n");
-            }
-
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        printf("Budget not found.\n");
-    }
+    return budget.allocatedBudget - budget.expenditure;
 }
 
-/* Supplier Management */
+
+/* =========================
+   SUPPLIER MENU
+   ========================= */
+
 void supplierMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== SUPPLIER MANAGEMENT =====\n");
+    do {
+        printf("\n========== SUPPLIER MANAGEMENT ==========\n");
         printf("1. Add Supplier\n");
         printf("2. Display Suppliers\n");
         printf("3. Search Supplier\n");
+        printf("4. Compare Suppliers\n");
         printf("0. Back\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 addSupplier();
                 break;
@@ -532,121 +615,206 @@ void supplierMenu(void)
                 searchSupplier();
                 break;
 
+            case 4:
+                compareSuppliers();
+                break;
+
             case 0:
-                printf("Returning to main menu...\n");
                 break;
 
             default:
-                printf("Invalid choice.\n");
+                printf("\nInvalid choice.\n");
         }
 
     } while (choice != 0);
 }
 
+
+/* =========================
+   ADD SUPPLIER
+   ========================= */
+
 void addSupplier(void)
 {
-    if (supplierCount >= MAX_SUPPLIERS)
-    {
-        printf("Supplier storage is full.\n");
+    if (supplierCount >= MAX_SUPPLIERS) {
+        printf("\nSupplier storage is full.\n");
         return;
     }
 
-    printf("\nEnter Supplier ID: ");
-    scanf("%d", &suppliers[supplierCount].id);
+    printf("\n========== ADD SUPPLIER ==========\n");
 
-    if (suppliers[supplierCount].id <= 0)
-    {
-        printf("Invalid Supplier ID.\n");
-        return;
-    }
+    do {
+        printf("Enter Supplier ID: ");
+        scanf("%d", &suppliers[supplierCount].id);
+
+        if (suppliers[supplierCount].id <= 0) {
+            printf("Supplier ID must be greater than 0.\n");
+        }
+
+    } while (suppliers[supplierCount].id <= 0);
 
     printf("Enter Supplier Name: ");
-    scanf(" %[^\n]", suppliers[supplierCount].name);
+    readNonEmptyString(suppliers[supplierCount].name, 100);
 
     printf("Enter Email: ");
-    scanf(" %[^\n]", suppliers[supplierCount].email);
+    readNonEmptyString(suppliers[supplierCount].email, 100);
 
     printf("Enter Telephone: ");
-    scanf(" %[^\n]", suppliers[supplierCount].telephone);
+    readNonEmptyString(suppliers[supplierCount].telephone, 30);
 
     printf("Enter Town/Location: ");
-    scanf(" %[^\n]", suppliers[supplierCount].town);
+    readNonEmptyString(suppliers[supplierCount].location, 100);
 
     supplierCount++;
 
-    printf("Supplier added successfully.\n");
+    printf("\nSupplier added successfully.\n");
 }
+
+
+/* =========================
+   DISPLAY SUPPLIERS
+   ========================= */
 
 void displaySuppliers(void)
 {
-    int i;
-
-    if (supplierCount == 0)
-    {
+    if (supplierCount == 0) {
         printf("\nNo suppliers available.\n");
         return;
     }
 
-    printf("\n===== SUPPLIER LIST =====\n");
+    printf("\n========== SUPPLIER LIST ==========\n");
 
-    for (i = 0; i < supplierCount; i++)
-    {
+    for (int i = 0; i < supplierCount; i++) {
+        char contact[250];
+
+        buildSupplierContact(suppliers[i], contact);
+
         printf("\nSupplier ID: %d\n", suppliers[i].id);
         printf("Name: %s\n", suppliers[i].name);
         printf("Email: %s\n", suppliers[i].email);
         printf("Telephone: %s\n", suppliers[i].telephone);
-        printf("Town/Location: %s\n", suppliers[i].town);
+        printf("Location: %s\n", suppliers[i].location);
+        printf("Contact Information: %s\n", contact);
     }
 }
 
+
+/* =========================
+   SEARCH SUPPLIER
+   ========================= */
+
 void searchSupplier(void)
 {
-    int id;
-    int i;
+    char searchName[100];
     int found = 0;
 
-    printf("\nEnter Supplier ID to search: ");
-    scanf("%d", &id);
+    if (supplierCount == 0) {
+        printf("\nNo suppliers available.\n");
+        return;
+    }
 
-    for (i = 0; i < supplierCount; i++)
-    {
-        if (suppliers[i].id == id)
-        {
+    printf("\nEnter supplier name to search: ");
+    readNonEmptyString(searchName, 100);
+
+    for (int i = 0; i < supplierCount; i++) {
+
+        if (strcmp(suppliers[i].name, searchName) == 0) {
             printf("\nSupplier found!\n");
             printf("ID: %d\n", suppliers[i].id);
             printf("Name: %s\n", suppliers[i].name);
             printf("Email: %s\n", suppliers[i].email);
             printf("Telephone: %s\n", suppliers[i].telephone);
-            printf("Town/Location: %s\n", suppliers[i].town);
+            printf("Location: %s\n", suppliers[i].location);
 
             found = 1;
-            break;
         }
     }
 
-    if (!found)
-    {
-        printf("Supplier not found.\n");
+    if (!found) {
+        printf("\nSupplier not found.\n");
     }
 }
 
-/* Asset Management */
+
+/* =========================
+   COMPARE SUPPLIERS
+   ========================= */
+
+void compareSuppliers(void)
+{
+    char name1[100];
+    char name2[100];
+    int firstFound = -1;
+    int secondFound = -1;
+
+    if (supplierCount < 2) {
+        printf("\nAt least two suppliers are required.\n");
+        return;
+    }
+
+    printf("\nEnter first supplier name: ");
+    readNonEmptyString(name1, 100);
+
+    printf("Enter second supplier name: ");
+    readNonEmptyString(name2, 100);
+
+    for (int i = 0; i < supplierCount; i++) {
+
+        if (strcmp(suppliers[i].name, name1) == 0) {
+            firstFound = i;
+        }
+
+        if (strcmp(suppliers[i].name, name2) == 0) {
+            secondFound = i;
+        }
+    }
+
+    if (firstFound == -1 || secondFound == -1) {
+        printf("\nOne or both suppliers were not found.\n");
+        return;
+    }
+
+    printf("\n========== SUPPLIER COMPARISON ==========\n");
+
+    printf("\nSupplier 1:\n");
+    printf("Name: %s\n", suppliers[firstFound].name);
+    printf("Email: %s\n", suppliers[firstFound].email);
+    printf("Telephone: %s\n", suppliers[firstFound].telephone);
+    printf("Location: %s\n", suppliers[firstFound].location);
+
+    printf("\nSupplier 2:\n");
+    printf("Name: %s\n", suppliers[secondFound].name);
+    printf("Email: %s\n", suppliers[secondFound].email);
+    printf("Telephone: %s\n", suppliers[secondFound].telephone);
+    printf("Location: %s\n", suppliers[secondFound].location);
+
+    if (strcmp(suppliers[firstFound].location,
+               suppliers[secondFound].location) == 0) {
+        printf("\nBoth suppliers are located in the same town/location.\n");
+    } else {
+        printf("\nThe suppliers are located in different towns/locations.\n");
+    }
+}
+
+
+/* =========================
+   ASSET MENU
+   ========================= */
+
 void assetMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== ASSET MANAGEMENT =====\n");
+    do {
+        printf("\n========== ASSET MANAGEMENT ==========\n");
         printf("1. Add Asset\n");
         printf("2. Display Assets\n");
         printf("3. Search Asset\n");
         printf("0. Back\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 addAsset();
                 break;
@@ -660,132 +828,150 @@ void assetMenu(void)
                 break;
 
             case 0:
-                printf("Returning to main menu...\n");
                 break;
 
             default:
-                printf("Invalid choice.\n");
+                printf("\nInvalid choice.\n");
         }
 
     } while (choice != 0);
 }
 
+
+/* =========================
+   ADD ASSET
+   ========================= */
+
 void addAsset(void)
 {
-    if (assetCount >= MAX_ASSETS)
-    {
-        printf("Asset storage is full.\n");
+    if (assetCount >= MAX_ASSETS) {
+        printf("\nAsset storage is full.\n");
         return;
     }
 
-    printf("\nEnter Asset ID: ");
-    scanf("%d", &assets[assetCount].id);
+    printf("\n========== ADD ASSET ==========\n");
 
-    if (assets[assetCount].id <= 0)
-    {
-        printf("Invalid Asset ID.\n");
-        return;
-    }
+    do {
+        printf("Enter Asset ID: ");
+        scanf("%d", &assets[assetCount].id);
+
+        if (assets[assetCount].id <= 0) {
+            printf("Asset ID must be greater than 0.\n");
+        }
+
+    } while (assets[assetCount].id <= 0);
 
     printf("Enter Asset Name: ");
-    scanf(" %[^\n]", assets[assetCount].name);
+    readNonEmptyString(assets[assetCount].name, 100);
 
     printf("Enter Asset Type: ");
-    scanf(" %[^\n]", assets[assetCount].type);
+    readNonEmptyString(assets[assetCount].type, 100);
 
-    printf("Enter Purchase Value: ");
-    scanf("%f", &assets[assetCount].purchaseValue);
+    do {
+        printf("Enter Purchase Value: ");
+        scanf("%f", &assets[assetCount].purchaseValue);
 
-    if (assets[assetCount].purchaseValue < 0)
-    {
-        printf("Purchase value cannot be negative.\n");
-        return;
-    }
+        if (assets[assetCount].purchaseValue < 0) {
+            printf("Purchase value cannot be negative.\n");
+        }
+
+    } while (assets[assetCount].purchaseValue < 0);
 
     printf("Enter Department: ");
-    scanf(" %[^\n]", assets[assetCount].department);
+    readNonEmptyString(assets[assetCount].department, 100);
 
     printf("Enter Condition: ");
-    scanf(" %[^\n]", assets[assetCount].condition);
+    readNonEmptyString(assets[assetCount].condition, 100);
 
     assetCount++;
 
-    printf("Asset added successfully.\n");
+    printf("\nAsset added successfully.\n");
 }
+
+
+/* =========================
+   DISPLAY ASSETS
+   ========================= */
 
 void displayAssets(void)
 {
-    int i;
-
-    if (assetCount == 0)
-    {
+    if (assetCount == 0) {
         printf("\nNo assets available.\n");
         return;
     }
 
-    printf("\n===== ASSET LIST =====\n");
+    printf("\n========== ASSET LIST ==========\n");
 
-    for (i = 0; i < assetCount; i++)
-    {
+    for (int i = 0; i < assetCount; i++) {
         printf("\nAsset ID: %d\n", assets[i].id);
         printf("Name: %s\n", assets[i].name);
         printf("Type: %s\n", assets[i].type);
-        printf("Purchase Value: %.2f\n", assets[i].purchaseValue);
+        printf("Purchase Value: N$%.2f\n",
+               assets[i].purchaseValue);
         printf("Department: %s\n", assets[i].department);
         printf("Condition: %s\n", assets[i].condition);
     }
 }
 
+
+/* =========================
+   SEARCH ASSET
+   ========================= */
+
 void searchAsset(void)
 {
-    int id;
-    int i;
+    char searchName[100];
     int found = 0;
 
-    printf("\nEnter Asset ID to search: ");
-    scanf("%d", &id);
+    if (assetCount == 0) {
+        printf("\nNo assets available.\n");
+        return;
+    }
 
-    for (i = 0; i < assetCount; i++)
-    {
-        if (assets[i].id == id)
-        {
+    printf("\nEnter asset name to search: ");
+    readNonEmptyString(searchName, 100);
+
+    for (int i = 0; i < assetCount; i++) {
+
+        if (strcmp(assets[i].name, searchName) == 0) {
             printf("\nAsset found!\n");
             printf("ID: %d\n", assets[i].id);
             printf("Name: %s\n", assets[i].name);
             printf("Type: %s\n", assets[i].type);
-            printf("Purchase Value: %.2f\n", assets[i].purchaseValue);
+            printf("Purchase Value: N$%.2f\n",
+                   assets[i].purchaseValue);
             printf("Department: %s\n", assets[i].department);
             printf("Condition: %s\n", assets[i].condition);
 
             found = 1;
-            break;
         }
     }
 
-    if (!found)
-    {
-        printf("Asset not found.\n");
+    if (!found) {
+        printf("\nAsset not found.\n");
     }
 }
 
-/* Reports */
+
+/* =========================
+   REPORT MENU
+   ========================= */
+
 void reportMenu(void)
 {
     int choice;
 
-    do
-    {
-        printf("\n===== REPORTS =====\n");
+    do {
+        printf("\n========== REPORTS ==========\n");
         printf("1. Employee Report\n");
         printf("2. Budget Report\n");
         printf("3. Supplier Report\n");
         printf("4. Asset Report\n");
         printf("0. Back\n");
-        printf("Enter choice: ");
+        printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 employeeReport();
                 break;
@@ -803,165 +989,198 @@ void reportMenu(void)
                 break;
 
             case 0:
-                printf("Returning to main menu...\n");
                 break;
 
             default:
-                printf("Invalid choice.\n");
+                printf("\nInvalid choice.\n");
         }
 
     } while (choice != 0);
 }
 
-/* Employee Report */
+
+/* =========================
+   EMPLOYEE REPORT
+   ========================= */
+
 void employeeReport(void)
 {
-    int i;
-    float totalSalary = 0;
-    float averageSalary;
-    float highestSalary = 0;
-    float lowestSalary = 0;
-    float salary;
+    float total = 0;
+    float highest;
+    float lowest;
 
-    if (employeeCount == 0)
-    {
+    if (employeeCount == 0) {
         printf("\nNo employee data available.\n");
         return;
     }
 
-    for (i = 0; i < employeeCount; i++)
-    {
-        salary = employees[i].basicSalary
-               + employees[i].housingAllowance
-               + employees[i].transportAllowance;
+    highest = calculateSalary(employees[0]);
+    lowest = calculateSalary(employees[0]);
 
-        totalSalary += salary;
+    for (int i = 0; i < employeeCount; i++) {
+        float salary = calculateSalary(employees[i]);
 
-        if (i == 0)
-        {
-            highestSalary = salary;
-            lowestSalary = salary;
+        total += salary;
+
+        if (salary > highest) {
+            highest = salary;
         }
 
-        if (salary > highestSalary)
-        {
-            highestSalary = salary;
-        }
-
-        if (salary < lowestSalary)
-        {
-            lowestSalary = salary;
+        if (salary < lowest) {
+            lowest = salary;
         }
     }
 
-    averageSalary = totalSalary / employeeCount;
-
-    printf("\n===== EMPLOYEE REPORT =====\n");
+    printf("\n========== EMPLOYEE REPORT ==========\n");
     printf("Total Employees: %d\n", employeeCount);
-    printf("Average Salary: %.2f\n", averageSalary);
-    printf("Highest Salary: %.2f\n", highestSalary);
-    printf("Lowest Salary: %.2f\n", lowestSalary);
+    printf("Average Salary: N$%.2f\n",
+           total / employeeCount);
+    printf("Highest Salary: N$%.2f\n", highest);
+    printf("Lowest Salary: N$%.2f\n", lowest);
 }
 
-/* Budget Report */
+
+/* =========================
+   BUDGET REPORT
+   ========================= */
+
 void budgetReport(void)
 {
-    int i;
     float totalAllocated = 0;
     float totalExpenditure = 0;
-    float totalRemaining;
+    float totalRemaining = 0;
     int overBudget = 0;
 
-    if (budgetCount == 0)
-    {
+    if (budgetCount == 0) {
         printf("\nNo budget data available.\n");
         return;
     }
 
-    for (i = 0; i < budgetCount; i++)
-    {
-        totalAllocated += budgets[i].allocated;
+    for (int i = 0; i < budgetCount; i++) {
+        totalAllocated += budgets[i].allocatedBudget;
         totalExpenditure += budgets[i].expenditure;
+        totalRemaining += calculateRemainingBudget(budgets[i]);
 
-        if (budgets[i].expenditure > budgets[i].allocated)
-        {
+        if (budgets[i].expenditure > budgets[i].allocatedBudget) {
             overBudget++;
         }
     }
 
-    totalRemaining = totalAllocated - totalExpenditure;
+    printf("\n========== BUDGET REPORT ==========\n");
+    printf("Total Allocated Budget: N$%.2f\n",
+           totalAllocated);
+    printf("Total Expenditure: N$%.2f\n",
+           totalExpenditure);
+    printf("Total Remaining Budget: N$%.2f\n",
+           totalRemaining);
+    printf("Departments Over Budget: %d\n",
+           overBudget);
 
-    printf("\n===== BUDGET REPORT =====\n");
-    printf("Total Allocated: %.2f\n", totalAllocated);
-    printf("Total Expenditure: %.2f\n", totalExpenditure);
-    printf("Total Remaining: %.2f\n", totalRemaining);
-    printf("Departments Over Budget: %d\n", overBudget);
+    if (overBudget > 0) {
+        printf("\nDepartments exceeding budget:\n");
 
-    if (overBudget > 0)
-    {
-        printf("\nDepartments Exceeding Budget:\n");
+        for (int i = 0; i < budgetCount; i++) {
+            if (budgets[i].expenditure >
+                budgets[i].allocatedBudget) {
 
-        for (i = 0; i < budgetCount; i++)
-        {
-            if (budgets[i].expenditure > budgets[i].allocated)
-            {
                 printf("- %s\n", budgets[i].department);
             }
         }
     }
 }
 
-/* Supplier Report */
+
+/* =========================
+   SUPPLIER REPORT
+   ========================= */
+
 void supplierReport(void)
 {
-    int i;
-
-    if (supplierCount == 0)
-    {
+    if (supplierCount == 0) {
         printf("\nNo supplier data available.\n");
         return;
     }
 
-    printf("\n===== SUPPLIER REPORT =====\n");
+    printf("\n========== SUPPLIER REPORT ==========\n");
     printf("Total Suppliers: %d\n", supplierCount);
 
-    for (i = 0; i < supplierCount; i++)
-    {
-        printf("\nSupplier ID: %d\n", suppliers[i].id);
+    for (int i = 0; i < supplierCount; i++) {
+        printf("\nSupplier %d\n", i + 1);
+        printf("ID: %d\n", suppliers[i].id);
         printf("Name: %s\n", suppliers[i].name);
         printf("Email: %s\n", suppliers[i].email);
         printf("Telephone: %s\n", suppliers[i].telephone);
-        printf("Town/Location: %s\n", suppliers[i].town);
+        printf("Location: %s\n", suppliers[i].location);
     }
 }
 
-/* Asset Report */
+
+/* =========================
+   ASSET REPORT
+   ========================= */
+
 void assetReport(void)
 {
-    int i;
     float totalValue = 0;
 
-    if (assetCount == 0)
-    {
+    if (assetCount == 0) {
         printf("\nNo asset data available.\n");
         return;
     }
 
-    for (i = 0; i < assetCount; i++)
-    {
+    for (int i = 0; i < assetCount; i++) {
         totalValue += assets[i].purchaseValue;
     }
 
-    printf("\n===== ASSET REPORT =====\n");
+    printf("\n========== ASSET REPORT ==========\n");
     printf("Total Assets: %d\n", assetCount);
-    printf("Total Purchase Value: %.2f\n", totalValue);
+    printf("Total Purchase Value: N$%.2f\n",
+           totalValue);
 
-    for (i = 0; i < assetCount; i++)
-    {
-        printf("\nAsset ID: %d\n", assets[i].id);
+    for (int i = 0; i < assetCount; i++) {
+        printf("\nAsset %d\n", i + 1);
+        printf("ID: %d\n", assets[i].id);
         printf("Name: %s\n", assets[i].name);
         printf("Type: %s\n", assets[i].type);
+        printf("Purchase Value: N$%.2f\n",
+               assets[i].purchaseValue);
         printf("Department: %s\n", assets[i].department);
         printf("Condition: %s\n", assets[i].condition);
     }
+}
+
+
+/* =========================
+   STRING FUNCTIONS
+   ========================= */
+
+/* Uses strlen() to make sure the text is not empty */
+void readNonEmptyString(char text[], int size)
+{
+    do {
+        scanf(" %[^\n]", text);
+
+        if (strlen(text) == 0) {
+            printf("Input cannot be empty. Try again: ");
+        }
+
+    } while (strlen(text) == 0);
+}
+
+
+/* Uses strcpy() to copy one string into another */
+void copyText(char destination[], char source[])
+{
+    strcpy(destination, source);
+}
+
+
+/* Uses strcat() to combine supplier contact information */
+void buildSupplierContact(Supplier supplier, char result[])
+{
+    strcpy(result, supplier.email);
+
+    strcat(result, " | ");
+
+    strcat(result, supplier.telephone);
 }
