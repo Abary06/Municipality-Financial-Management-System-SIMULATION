@@ -105,6 +105,12 @@ void readNonEmptyString(char text[], int size);
 void copyText(char destination[], char source[]);
 void buildSupplierContact(Supplier supplier, char result[]);
 
+/* Duplicate ID validation */
+int employeeIDExists(int id);
+int budgetIDExists(int id);
+int supplierIDExists(int id);
+int assetIDExists(int id);
+
 
 /* =========================
    MAIN
@@ -259,9 +265,12 @@ void addEmployee(void)
 
         if (employees[employeeCount].id <= 0) {
             printf("Employee ID must be greater than 0.\n");
+        } else if (employeeIDExists(employees[employeeCount].id)) {
+            printf("Employee ID already exists. Enter a different ID.\n");
         }
 
-    } while (employees[employeeCount].id <= 0);
+    } while (employees[employeeCount].id <= 0 ||
+             employeeIDExists(employees[employeeCount].id));
 
     printf("Enter Employee Name: ");
     readNonEmptyString(employees[employeeCount].name, 100);
@@ -352,7 +361,6 @@ void searchEmployee(void)
 
     for (int i = 0; i < employeeCount; i++) {
 
-        /* strcmp() compares two strings */
         if (strcmp(employees[i].name, searchName) == 0) {
             printf("\nEmployee found!\n");
             printf("ID: %d\n", employees[i].id);
@@ -469,9 +477,12 @@ void addBudget(void)
 
         if (budgets[budgetCount].id <= 0) {
             printf("Budget ID must be greater than 0.\n");
+        } else if (budgetIDExists(budgets[budgetCount].id)) {
+            printf("Budget ID already exists. Enter a different ID.\n");
         }
 
-    } while (budgets[budgetCount].id <= 0);
+    } while (budgets[budgetCount].id <= 0 ||
+             budgetIDExists(budgets[budgetCount].id));
 
     printf("Enter Department: ");
     readNonEmptyString(budgets[budgetCount].department, 100);
@@ -649,9 +660,12 @@ void addSupplier(void)
 
         if (suppliers[supplierCount].id <= 0) {
             printf("Supplier ID must be greater than 0.\n");
+        } else if (supplierIDExists(suppliers[supplierCount].id)) {
+            printf("Supplier ID already exists. Enter a different ID.\n");
         }
 
-    } while (suppliers[supplierCount].id <= 0);
+    } while (suppliers[supplierCount].id <= 0 ||
+             supplierIDExists(suppliers[supplierCount].id));
 
     printf("Enter Supplier Name: ");
     readNonEmptyString(suppliers[supplierCount].name, 100);
@@ -857,9 +871,12 @@ void addAsset(void)
 
         if (assets[assetCount].id <= 0) {
             printf("Asset ID must be greater than 0.\n");
+        } else if (assetIDExists(assets[assetCount].id)) {
+            printf("Asset ID already exists. Enter a different ID.\n");
         }
 
-    } while (assets[assetCount].id <= 0);
+    } while (assets[assetCount].id <= 0 ||
+             assetIDExists(assets[assetCount].id));
 
     printf("Enter Asset Name: ");
     readNonEmptyString(assets[assetCount].name, 100);
@@ -1147,6 +1164,58 @@ void assetReport(void)
         printf("Department: %s\n", assets[i].department);
         printf("Condition: %s\n", assets[i].condition);
     }
+}
+
+
+/* =========================
+   DUPLICATE ID VALIDATION
+   ========================= */
+
+int employeeIDExists(int id)
+{
+    for (int i = 0; i < employeeCount; i++) {
+        if (employees[i].id == id) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+int budgetIDExists(int id)
+{
+    for (int i = 0; i < budgetCount; i++) {
+        if (budgets[i].id == id) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+int supplierIDExists(int id)
+{
+    for (int i = 0; i < supplierCount; i++) {
+        if (suppliers[i].id == id) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+int assetIDExists(int id)
+{
+    for (int i = 0; i < assetCount; i++) {
+        if (assets[i].id == id) {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 
