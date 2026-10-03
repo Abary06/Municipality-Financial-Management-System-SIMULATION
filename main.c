@@ -2,6 +2,7 @@
 #include <string.h>
 
 #define MAX_EMPLOYEES 100
+#define MAX_BUDGETS 50
 
 // Employee data
 struct Employee
@@ -14,19 +15,37 @@ struct Employee
     float transportAllowance;
 };
 
-// Store employee data
+// Budget data
+struct Budget
+{
+    char department[50];
+    float allocatedBudget;
+    float expenditure;
+};
+
+// Store data
 struct Employee employees[MAX_EMPLOYEES];
+struct Budget budgets[MAX_BUDGETS];
+
 int employeeCount = 0;
+int budgetCount = 0;
 
 // Menu functions
 void mainMenu(void);
 void employeeMenu(void);
+void budgetMenu(void);
 
 // Employee functions
 void addEmployee(void);
 void displayEmployees(void);
 void searchEmployee(void);
 void calculateSalary(void);
+
+// Budget functions
+void addBudget(void);
+void displayBudgets(void);
+void searchBudget(void);
+void calculateRemainingBudget(void);
 
 // Main function
 int main(void)
@@ -62,7 +81,7 @@ void mainMenu(void)
                 break;
 
             case 2:
-                printf("\nBudget Management is not available yet.\n");
+                budgetMenu();
                 break;
 
             case 3:
@@ -257,5 +276,181 @@ void calculateSalary(void)
     if (!found)
     {
         printf("\nEmployee not found.\n");
+    }
+}
+
+// Budget menu
+void budgetMenu(void)
+{
+    int choice;
+
+    do
+    {
+        printf("\n====================================\n");
+        printf("         BUDGET MANAGEMENT\n");
+        printf("====================================\n");
+        printf("1. Add Budget\n");
+        printf("2. Display Budgets\n");
+        printf("3. Search Budget\n");
+        printf("4. Calculate Remaining Budget\n");
+        printf("0. Back to Main Menu\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                addBudget();
+                break;
+
+            case 2:
+                displayBudgets();
+                break;
+
+            case 3:
+                searchBudget();
+                break;
+
+            case 4:
+                calculateRemainingBudget();
+                break;
+
+            case 0:
+                printf("\nReturning to main menu...\n");
+                break;
+
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+        }
+
+    } while (choice != 0);
+}
+
+// Add budget
+void addBudget(void)
+{
+    if (budgetCount >= MAX_BUDGETS)
+    {
+        printf("\nBudget storage is full.\n");
+        return;
+    }
+
+    printf("\nEnter Department: ");
+    scanf(" %49[^\n]", budgets[budgetCount].department);
+
+    printf("Enter Allocated Budget: ");
+    scanf("%f", &budgets[budgetCount].allocatedBudget);
+
+    printf("Enter Expenditure: ");
+    scanf("%f", &budgets[budgetCount].expenditure);
+
+    budgetCount++;
+
+    printf("\nBudget added successfully.\n");
+}
+
+// Display budgets
+void displayBudgets(void)
+{
+    int i;
+    float remaining;
+
+    if (budgetCount == 0)
+    {
+        printf("\nNo budgets available.\n");
+        return;
+    }
+
+    printf("\n========== BUDGET LIST ==========\n");
+
+    for (i = 0; i < budgetCount; i++)
+    {
+        remaining = budgets[i].allocatedBudget - budgets[i].expenditure;
+
+        printf("\nDepartment: %s\n", budgets[i].department);
+        printf("Allocated Budget: %.2f\n", budgets[i].allocatedBudget);
+        printf("Expenditure: %.2f\n", budgets[i].expenditure);
+        printf("Remaining Budget: %.2f\n", remaining);
+
+        if (remaining >= 0)
+        {
+            printf("Status: Within Budget\n");
+        }
+        else
+        {
+            printf("Status: Over Budget\n");
+        }
+    }
+}
+
+// Search budget
+void searchBudget(void)
+{
+    char department[50];
+    int i;
+    int found = 0;
+
+    printf("\nEnter Department to search: ");
+    scanf(" %49[^\n]", department);
+
+    for (i = 0; i < budgetCount; i++)
+    {
+        if (strcmp(budgets[i].department, department) == 0)
+        {
+            printf("\nBudget found!\n");
+            printf("Department: %s\n", budgets[i].department);
+            printf("Allocated Budget: %.2f\n", budgets[i].allocatedBudget);
+            printf("Expenditure: %.2f\n", budgets[i].expenditure);
+            printf("Remaining Budget: %.2f\n",
+                   budgets[i].allocatedBudget - budgets[i].expenditure);
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        printf("\nBudget not found.\n");
+    }
+}
+
+// Calculate remaining budget
+void calculateRemainingBudget(void)
+{
+    char department[50];
+    int i;
+    int found = 0;
+    float remaining;
+
+    printf("\nEnter Department: ");
+    scanf(" %49[^\n]", department);
+
+    for (i = 0; i < budgetCount; i++)
+    {
+        if (strcmp(budgets[i].department, department) == 0)
+        {
+            remaining = budgets[i].allocatedBudget - budgets[i].expenditure;
+
+            printf("\nDepartment: %s\n", budgets[i].department);
+            printf("Remaining Budget: %.2f\n", remaining);
+
+            if (remaining >= 0)
+            {
+                printf("Status: Within Budget\n");
+            }
+            else
+            {
+                printf("Status: Over Budget\n");
+            }
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        printf("\nBudget not found.\n");
     }
 }
