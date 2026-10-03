@@ -197,6 +197,12 @@ void addEmployee(void)
     printf("\nEnter Employee ID: ");
     scanf("%d", &employees[employeeCount].id);
 
+    if (employees[employeeCount].id <= 0)
+    {
+        printf("Invalid Employee ID.\n");
+        return;
+    }
+
     printf("Enter Employee Name: ");
     scanf(" %[^\n]", employees[employeeCount].name);
 
@@ -206,11 +212,29 @@ void addEmployee(void)
     printf("Enter Basic Salary: ");
     scanf("%f", &employees[employeeCount].basicSalary);
 
+    if (employees[employeeCount].basicSalary < 0)
+    {
+        printf("Salary cannot be negative.\n");
+        return;
+    }
+
     printf("Enter Housing Allowance: ");
     scanf("%f", &employees[employeeCount].housingAllowance);
 
+    if (employees[employeeCount].housingAllowance < 0)
+    {
+        printf("Housing allowance cannot be negative.\n");
+        return;
+    }
+
     printf("Enter Transport Allowance: ");
     scanf("%f", &employees[employeeCount].transportAllowance);
+
+    if (employees[employeeCount].transportAllowance < 0)
+    {
+        printf("Transport allowance cannot be negative.\n");
+        return;
+    }
 
     employeeCount++;
 
@@ -357,14 +381,32 @@ void addBudget(void)
     printf("\nEnter Budget ID: ");
     scanf("%d", &budgets[budgetCount].id);
 
+    if (budgets[budgetCount].id <= 0)
+    {
+        printf("Invalid Budget ID.\n");
+        return;
+    }
+
     printf("Enter Department: ");
     scanf(" %[^\n]", budgets[budgetCount].department);
 
     printf("Enter Allocated Budget: ");
     scanf("%f", &budgets[budgetCount].allocated);
 
+    if (budgets[budgetCount].allocated < 0)
+    {
+        printf("Allocated budget cannot be negative.\n");
+        return;
+    }
+
     printf("Enter Expenditure: ");
     scanf("%f", &budgets[budgetCount].expenditure);
+
+    if (budgets[budgetCount].expenditure < 0)
+    {
+        printf("Expenditure cannot be negative.\n");
+        return;
+    }
 
     budgetCount++;
 
@@ -512,6 +554,12 @@ void addSupplier(void)
     printf("\nEnter Supplier ID: ");
     scanf("%d", &suppliers[supplierCount].id);
 
+    if (suppliers[supplierCount].id <= 0)
+    {
+        printf("Invalid Supplier ID.\n");
+        return;
+    }
+
     printf("Enter Supplier Name: ");
     scanf(" %[^\n]", suppliers[supplierCount].name);
 
@@ -633,6 +681,12 @@ void addAsset(void)
     printf("\nEnter Asset ID: ");
     scanf("%d", &assets[assetCount].id);
 
+    if (assets[assetCount].id <= 0)
+    {
+        printf("Invalid Asset ID.\n");
+        return;
+    }
+
     printf("Enter Asset Name: ");
     scanf(" %[^\n]", assets[assetCount].name);
 
@@ -641,6 +695,12 @@ void addAsset(void)
 
     printf("Enter Purchase Value: ");
     scanf("%f", &assets[assetCount].purchaseValue);
+
+    if (assets[assetCount].purchaseValue < 0)
+    {
+        printf("Purchase value cannot be negative.\n");
+        return;
+    }
 
     printf("Enter Department: ");
     scanf(" %[^\n]", assets[assetCount].department);
