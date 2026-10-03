@@ -3,6 +3,7 @@
 
 #define MAX_EMPLOYEES 100
 #define MAX_BUDGETS 50
+#define MAX_SUPPLIERS 100
 
 // Employee data
 struct Employee
@@ -23,17 +24,30 @@ struct Budget
     float expenditure;
 };
 
+// Supplier data
+struct Supplier
+{
+    int id;
+    char name[50];
+    char email[100];
+    char telephone[30];
+    char town[50];
+};
+
 // Store data
 struct Employee employees[MAX_EMPLOYEES];
 struct Budget budgets[MAX_BUDGETS];
+struct Supplier suppliers[MAX_SUPPLIERS];
 
 int employeeCount = 0;
 int budgetCount = 0;
+int supplierCount = 0;
 
 // Menu functions
 void mainMenu(void);
 void employeeMenu(void);
 void budgetMenu(void);
+void supplierMenu(void);
 
 // Employee functions
 void addEmployee(void);
@@ -46,6 +60,11 @@ void addBudget(void);
 void displayBudgets(void);
 void searchBudget(void);
 void calculateRemainingBudget(void);
+
+// Supplier functions
+void addSupplier(void);
+void displaySuppliers(void);
+void searchSupplier(void);
 
 // Main function
 int main(void)
@@ -85,7 +104,7 @@ void mainMenu(void)
                 break;
 
             case 3:
-                printf("\nSupplier Management is not available yet.\n");
+                supplierMenu();
                 break;
 
             case 4:
@@ -452,5 +471,131 @@ void calculateRemainingBudget(void)
     if (!found)
     {
         printf("\nBudget not found.\n");
+    }
+}
+
+// Supplier menu
+void supplierMenu(void)
+{
+    int choice;
+
+    do
+    {
+        printf("\n====================================\n");
+        printf("        SUPPLIER MANAGEMENT\n");
+        printf("====================================\n");
+        printf("1. Add Supplier\n");
+        printf("2. Display Suppliers\n");
+        printf("3. Search Supplier\n");
+        printf("0. Back to Main Menu\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                addSupplier();
+                break;
+
+            case 2:
+                displaySuppliers();
+                break;
+
+            case 3:
+                searchSupplier();
+                break;
+
+            case 0:
+                printf("\nReturning to main menu...\n");
+                break;
+
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+        }
+
+    } while (choice != 0);
+}
+
+// Add supplier
+void addSupplier(void)
+{
+    if (supplierCount >= MAX_SUPPLIERS)
+    {
+        printf("\nSupplier storage is full.\n");
+        return;
+    }
+
+    printf("\nEnter Supplier ID: ");
+    scanf("%d", &suppliers[supplierCount].id);
+
+    printf("Enter Supplier Name: ");
+    scanf(" %49[^\n]", suppliers[supplierCount].name);
+
+    printf("Enter Supplier Email: ");
+    scanf(" %99s", suppliers[supplierCount].email);
+
+    printf("Enter Supplier Telephone: ");
+    scanf(" %29s", suppliers[supplierCount].telephone);
+
+    printf("Enter Town/Location: ");
+    scanf(" %49[^\n]", suppliers[supplierCount].town);
+
+    supplierCount++;
+
+    printf("\nSupplier added successfully.\n");
+}
+
+// Display suppliers
+void displaySuppliers(void)
+{
+    int i;
+
+    if (supplierCount == 0)
+    {
+        printf("\nNo suppliers available.\n");
+        return;
+    }
+
+    printf("\n========== SUPPLIER LIST ==========\n");
+
+    for (i = 0; i < supplierCount; i++)
+    {
+        printf("\nSupplier ID: %d\n", suppliers[i].id);
+        printf("Name: %s\n", suppliers[i].name);
+        printf("Email: %s\n", suppliers[i].email);
+        printf("Telephone: %s\n", suppliers[i].telephone);
+        printf("Town/Location: %s\n", suppliers[i].town);
+    }
+}
+
+// Search supplier
+void searchSupplier(void)
+{
+    char name[50];
+    int i;
+    int found = 0;
+
+    printf("\nEnter Supplier Name to search: ");
+    scanf(" %49[^\n]", name);
+
+    for (i = 0; i < supplierCount; i++)
+    {
+        if (strcmp(suppliers[i].name, name) == 0)
+        {
+            printf("\nSupplier found!\n");
+            printf("Supplier ID: %d\n", suppliers[i].id);
+            printf("Name: %s\n", suppliers[i].name);
+            printf("Email: %s\n", suppliers[i].email);
+            printf("Telephone: %s\n", suppliers[i].telephone);
+            printf("Town/Location: %s\n", suppliers[i].town);
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        printf("\nSupplier not found.\n");
     }
 }
