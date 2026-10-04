@@ -1,31 +1,25 @@
 #include <stdio.h>
 #include <string.h>
+#include "employees.h"
 
-#define MAX_EMPLOYEES 100
 #define MAX_BUDGETS 50
 #define MAX_SUPPLIERS 100
 #define MAX_ASSETS 100
 
-// Employee structure
-typedef struct {
-    int id;
-    char name[100];
-    char department[100];
-    float basicSalary;
-    float housingAllowance;
-    float transportAllowance;
-} Employee;
 
 // Budget structure
-typedef struct {
+typedef struct
+{
     int id;
     char department[100];
     float allocatedBudget;
     float expenditure;
 } Budget;
 
+
 // Supplier structure
-typedef struct {
+typedef struct
+{
     int id;
     char name[100];
     char email[100];
@@ -33,8 +27,10 @@ typedef struct {
     char location[100];
 } Supplier;
 
+
 // Asset structure
-typedef struct {
+typedef struct
+{
     int id;
     char name[100];
     char type[100];
@@ -43,31 +39,26 @@ typedef struct {
     char condition[100];
 } Asset;
 
+
 // Arrays
-Employee employees[MAX_EMPLOYEES];
 Budget budgets[MAX_BUDGETS];
 Supplier suppliers[MAX_SUPPLIERS];
 Asset assets[MAX_ASSETS];
 
+
 // Counters
-int employeeCount = 0;
 int budgetCount = 0;
 int supplierCount = 0;
 int assetCount = 0;
 
+
 // Menu functions
 void mainMenu(void);
-void employeeMenu(void);
 void budgetMenu(void);
 void supplierMenu(void);
 void assetMenu(void);
 void reportMenu(void);
 
-// Employee functions
-void addEmployee(void);
-void displayEmployees(void);
-void searchEmployee(void);
-float calculateSalary(Employee employee);
 
 // Budget functions
 void addBudget(void);
@@ -75,16 +66,19 @@ void displayBudgets(void);
 void searchBudget(void);
 float calculateRemainingBudget(Budget budget);
 
+
 // Supplier functions
 void addSupplier(void);
 void displaySuppliers(void);
 void searchSupplier(void);
 void compareSuppliers(void);
 
+
 // Asset functions
 void addAsset(void);
 void displayAssets(void);
 void searchAsset(void);
+
 
 // Report functions
 void employeeReport(void);
@@ -92,17 +86,19 @@ void budgetReport(void);
 void supplierReport(void);
 void assetReport(void);
 
+
 // Input functions
 int readInt(void);
 float readFloat(void);
 void readNonEmptyString(char text[], int size);
 
+
 // String functions
 void copyText(char destination[], const char source[]);
 void buildSupplierContact(char result[], Supplier supplier);
 
+
 // Duplicate ID functions
-int employeeIDExists(int id);
 int budgetIDExists(int id);
 int supplierIDExists(int id);
 int assetIDExists(int id);
@@ -113,6 +109,7 @@ int assetIDExists(int id);
 int main(void)
 {
     mainMenu();
+
     return 0;
 }
 
@@ -140,6 +137,7 @@ int readInt(void)
     return value;
 }
 
+
 // Read a decimal number
 float readFloat(void)
 {
@@ -160,6 +158,7 @@ float readFloat(void)
 
     return value;
 }
+
 
 // Read text that cannot be empty
 void readNonEmptyString(char text[], int size)
@@ -184,6 +183,7 @@ void copyText(char destination[], const char source[])
     strcpy(destination, source);
 }
 
+
 void buildSupplierContact(char result[], Supplier supplier)
 {
     strcpy(result, supplier.email);
@@ -193,21 +193,6 @@ void buildSupplierContact(char result[], Supplier supplier)
 
 
 // ==================== DUPLICATE ID CHECKS ====================
-
-int employeeIDExists(int id)
-{
-    int i;
-
-    for (i = 0; i < employeeCount; i++)
-    {
-        if (employees[i].id == id)
-        {
-            return 1;
-        }
-    }
-
-    return 0;
-}
 
 int budgetIDExists(int id)
 {
@@ -224,6 +209,7 @@ int budgetIDExists(int id)
     return 0;
 }
 
+
 int supplierIDExists(int id)
 {
     int i;
@@ -238,6 +224,7 @@ int supplierIDExists(int id)
 
     return 0;
 }
+
 
 int assetIDExists(int id)
 {
@@ -307,207 +294,6 @@ void mainMenu(void)
         }
 
     } while (choice != 0);
-}
-
-
-// ==================== EMPLOYEE MENU ====================
-
-void employeeMenu(void)
-{
-    int choice;
-
-    do
-    {
-        printf("\n========== EMPLOYEE MANAGEMENT ==========\n");
-        printf("1. Add Employee\n");
-        printf("2. Display Employees\n");
-        printf("3. Search Employee\n");
-        printf("4. Calculate Salary\n");
-        printf("0. Back\n");
-        printf("Enter your choice: ");
-
-        choice = readInt();
-
-        switch (choice)
-        {
-            case 1:
-                addEmployee();
-                break;
-
-            case 2:
-                displayEmployees();
-                break;
-
-            case 3:
-                searchEmployee();
-                break;
-
-            case 4:
-            {
-                int id;
-                int i;
-
-                printf("Enter Employee ID: ");
-                id = readInt();
-
-                for (i = 0; i < employeeCount; i++)
-                {
-                    if (employees[i].id == id)
-                    {
-                        printf("Total Salary: %.2f\n",
-                               calculateSalary(employees[i]));
-                        return;
-                    }
-                }
-
-                printf("Employee not found.\n");
-                break;
-            }
-
-            case 0:
-                break;
-
-            default:
-                printf("Invalid choice. Please try again.\n");
-        }
-
-    } while (choice != 0);
-}
-
-
-// ==================== EMPLOYEE FUNCTIONS ====================
-
-void addEmployee(void)
-{
-    if (employeeCount >= MAX_EMPLOYEES)
-    {
-        printf("Employee limit reached.\n");
-        return;
-    }
-
-    do
-    {
-        printf("Enter Employee ID: ");
-        employees[employeeCount].id = readInt();
-
-        if (employees[employeeCount].id <= 0)
-        {
-            printf("Employee ID must be greater than 0.\n");
-        }
-        else if (employeeIDExists(employees[employeeCount].id))
-        {
-            printf("Employee ID already exists. Enter a different ID.\n");
-        }
-
-    } while (employees[employeeCount].id <= 0 ||
-             employeeIDExists(employees[employeeCount].id));
-
-    printf("Enter Employee Name: ");
-    readNonEmptyString(employees[employeeCount].name,
-                       sizeof(employees[employeeCount].name));
-
-    printf("Enter Department: ");
-    readNonEmptyString(employees[employeeCount].department,
-                       sizeof(employees[employeeCount].department));
-
-    do
-    {
-        printf("Enter Basic Salary: ");
-        employees[employeeCount].basicSalary = readFloat();
-
-        if (employees[employeeCount].basicSalary < 0)
-        {
-            printf("Salary cannot be negative.\n");
-        }
-
-    } while (employees[employeeCount].basicSalary < 0);
-
-    do
-    {
-        printf("Enter Housing Allowance: ");
-        employees[employeeCount].housingAllowance = readFloat();
-
-        if (employees[employeeCount].housingAllowance < 0)
-        {
-            printf("Allowance cannot be negative.\n");
-        }
-
-    } while (employees[employeeCount].housingAllowance < 0);
-
-    do
-    {
-        printf("Enter Transport Allowance: ");
-        employees[employeeCount].transportAllowance = readFloat();
-
-        if (employees[employeeCount].transportAllowance < 0)
-        {
-            printf("Allowance cannot be negative.\n");
-        }
-
-    } while (employees[employeeCount].transportAllowance < 0);
-
-    employeeCount++;
-
-    printf("Employee added successfully.\n");
-}
-
-void displayEmployees(void)
-{
-    int i;
-
-    if (employeeCount == 0)
-    {
-        printf("No employees available.\n");
-        return;
-    }
-
-    printf("\n========== EMPLOYEES ==========\n");
-
-    for (i = 0; i < employeeCount; i++)
-    {
-        printf("\nEmployee ID: %d\n", employees[i].id);
-        printf("Name: %s\n", employees[i].name);
-        printf("Department: %s\n", employees[i].department);
-        printf("Basic Salary: %.2f\n", employees[i].basicSalary);
-        printf("Housing Allowance: %.2f\n",
-               employees[i].housingAllowance);
-        printf("Transport Allowance: %.2f\n",
-               employees[i].transportAllowance);
-        printf("Total Salary: %.2f\n",
-               calculateSalary(employees[i]));
-    }
-}
-
-void searchEmployee(void)
-{
-    int id;
-    int i;
-
-    printf("Enter Employee ID to search: ");
-    id = readInt();
-
-    for (i = 0; i < employeeCount; i++)
-    {
-        if (employees[i].id == id)
-        {
-            printf("\nEmployee Found\n");
-            printf("ID: %d\n", employees[i].id);
-            printf("Name: %s\n", employees[i].name);
-            printf("Department: %s\n", employees[i].department);
-            printf("Total Salary: %.2f\n",
-                   calculateSalary(employees[i]));
-            return;
-        }
-    }
-
-    printf("Employee not found.\n");
-}
-
-float calculateSalary(Employee employee)
-{
-    return employee.basicSalary +
-           employee.housingAllowance +
-           employee.transportAllowance;
 }
 
 
@@ -636,6 +422,7 @@ void addBudget(void)
     printf("Budget added successfully.\n");
 }
 
+
 void displayBudgets(void)
 {
     int i;
@@ -670,6 +457,7 @@ void displayBudgets(void)
     }
 }
 
+
 void searchBudget(void)
 {
     int id;
@@ -697,6 +485,7 @@ void searchBudget(void)
 
     printf("Budget not found.\n");
 }
+
 
 float calculateRemainingBudget(Budget budget)
 {
@@ -799,6 +588,7 @@ void addSupplier(void)
     printf("Supplier added successfully.\n");
 }
 
+
 void displaySuppliers(void)
 {
     int i;
@@ -822,6 +612,7 @@ void displaySuppliers(void)
         printf("Location: %s\n", suppliers[i].location);
     }
 }
+
 
 void searchSupplier(void)
 {
@@ -847,6 +638,7 @@ void searchSupplier(void)
 
     printf("Supplier not found.\n");
 }
+
 
 void compareSuppliers(void)
 {
@@ -1026,6 +818,7 @@ void addAsset(void)
     printf("Asset added successfully.\n");
 }
 
+
 void displayAssets(void)
 {
     int i;
@@ -1049,6 +842,7 @@ void displayAssets(void)
         printf("Condition: %s\n", assets[i].condition);
     }
 }
+
 
 void searchAsset(void)
 {
@@ -1170,6 +964,7 @@ void employeeReport(void)
     printf("Lowest Salary: %.2f\n", lowest);
 }
 
+
 void budgetReport(void)
 {
     int i;
@@ -1206,6 +1001,7 @@ void budgetReport(void)
     }
 }
 
+
 void supplierReport(void)
 {
     int i;
@@ -1221,6 +1017,7 @@ void supplierReport(void)
                suppliers[i].location);
     }
 }
+
 
 void assetReport(void)
 {
