@@ -1,20 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "employees.h"
+#include "budgets.h"
 
-#define MAX_BUDGETS 50
 #define MAX_SUPPLIERS 100
 #define MAX_ASSETS 100
-
-
-// Budget structure
-typedef struct
-{
-    int id;
-    char department[100];
-    float allocatedBudget;
-    float expenditure;
-} Budget;
 
 
 // Supplier structure
@@ -41,30 +31,20 @@ typedef struct
 
 
 // Arrays
-Budget budgets[MAX_BUDGETS];
 Supplier suppliers[MAX_SUPPLIERS];
 Asset assets[MAX_ASSETS];
 
 
 // Counters
-int budgetCount = 0;
 int supplierCount = 0;
 int assetCount = 0;
 
 
 // Menu functions
 void mainMenu(void);
-void budgetMenu(void);
 void supplierMenu(void);
 void assetMenu(void);
 void reportMenu(void);
-
-
-// Budget functions
-void addBudget(void);
-void displayBudgets(void);
-void searchBudget(void);
-float calculateRemainingBudget(Budget budget);
 
 
 // Supplier functions
@@ -99,7 +79,6 @@ void buildSupplierContact(char result[], Supplier supplier);
 
 
 // Duplicate ID functions
-int budgetIDExists(int id);
 int supplierIDExists(int id);
 int assetIDExists(int id);
 
@@ -194,22 +173,6 @@ void buildSupplierContact(char result[], Supplier supplier)
 
 // ==================== DUPLICATE ID CHECKS ====================
 
-int budgetIDExists(int id)
-{
-    int i;
-
-    for (i = 0; i < budgetCount; i++)
-    {
-        if (budgets[i].id == id)
-        {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-
 int supplierIDExists(int id)
 {
     int i;
@@ -294,202 +257,6 @@ void mainMenu(void)
         }
 
     } while (choice != 0);
-}
-
-
-// ==================== BUDGET MENU ====================
-
-void budgetMenu(void)
-{
-    int choice;
-
-    do
-    {
-        printf("\n========== BUDGET MANAGEMENT ==========\n");
-        printf("1. Add Budget\n");
-        printf("2. Display Budgets\n");
-        printf("3. Search Budget\n");
-        printf("4. Calculate Remaining Budget\n");
-        printf("0. Back\n");
-        printf("Enter your choice: ");
-
-        choice = readInt();
-
-        switch (choice)
-        {
-            case 1:
-                addBudget();
-                break;
-
-            case 2:
-                displayBudgets();
-                break;
-
-            case 3:
-                searchBudget();
-                break;
-
-            case 4:
-            {
-                int id;
-                int i;
-
-                printf("Enter Budget ID: ");
-                id = readInt();
-
-                for (i = 0; i < budgetCount; i++)
-                {
-                    if (budgets[i].id == id)
-                    {
-                        printf("Remaining Budget: %.2f\n",
-                               calculateRemainingBudget(budgets[i]));
-                        return;
-                    }
-                }
-
-                printf("Budget not found.\n");
-                break;
-            }
-
-            case 0:
-                break;
-
-            default:
-                printf("Invalid choice. Please try again.\n");
-        }
-
-    } while (choice != 0);
-}
-
-
-// ==================== BUDGET FUNCTIONS ====================
-
-void addBudget(void)
-{
-    if (budgetCount >= MAX_BUDGETS)
-    {
-        printf("Budget limit reached.\n");
-        return;
-    }
-
-    do
-    {
-        printf("Enter Budget ID: ");
-        budgets[budgetCount].id = readInt();
-
-        if (budgets[budgetCount].id <= 0)
-        {
-            printf("Budget ID must be greater than 0.\n");
-        }
-        else if (budgetIDExists(budgets[budgetCount].id))
-        {
-            printf("Budget ID already exists. Enter a different ID.\n");
-        }
-
-    } while (budgets[budgetCount].id <= 0 ||
-             budgetIDExists(budgets[budgetCount].id));
-
-    printf("Enter Department: ");
-    readNonEmptyString(budgets[budgetCount].department,
-                       sizeof(budgets[budgetCount].department));
-
-    do
-    {
-        printf("Enter Allocated Budget: ");
-        budgets[budgetCount].allocatedBudget = readFloat();
-
-        if (budgets[budgetCount].allocatedBudget < 0)
-        {
-            printf("Budget cannot be negative.\n");
-        }
-
-    } while (budgets[budgetCount].allocatedBudget < 0);
-
-    do
-    {
-        printf("Enter Expenditure: ");
-        budgets[budgetCount].expenditure = readFloat();
-
-        if (budgets[budgetCount].expenditure < 0)
-        {
-            printf("Expenditure cannot be negative.\n");
-        }
-
-    } while (budgets[budgetCount].expenditure < 0);
-
-    budgetCount++;
-
-    printf("Budget added successfully.\n");
-}
-
-
-void displayBudgets(void)
-{
-    int i;
-
-    if (budgetCount == 0)
-    {
-        printf("No budgets available.\n");
-        return;
-    }
-
-    printf("\n========== BUDGETS ==========\n");
-
-    for (i = 0; i < budgetCount; i++)
-    {
-        printf("\nBudget ID: %d\n", budgets[i].id);
-        printf("Department: %s\n", budgets[i].department);
-        printf("Allocated Budget: %.2f\n",
-               budgets[i].allocatedBudget);
-        printf("Expenditure: %.2f\n",
-               budgets[i].expenditure);
-        printf("Remaining Budget: %.2f\n",
-               calculateRemainingBudget(budgets[i]));
-
-        if (budgets[i].expenditure > budgets[i].allocatedBudget)
-        {
-            printf("Status: OVER BUDGET\n");
-        }
-        else
-        {
-            printf("Status: WITHIN BUDGET\n");
-        }
-    }
-}
-
-
-void searchBudget(void)
-{
-    int id;
-    int i;
-
-    printf("Enter Budget ID to search: ");
-    id = readInt();
-
-    for (i = 0; i < budgetCount; i++)
-    {
-        if (budgets[i].id == id)
-        {
-            printf("\nBudget Found\n");
-            printf("ID: %d\n", budgets[i].id);
-            printf("Department: %s\n", budgets[i].department);
-            printf("Allocated: %.2f\n",
-                   budgets[i].allocatedBudget);
-            printf("Expenditure: %.2f\n",
-                   budgets[i].expenditure);
-            printf("Remaining: %.2f\n",
-                   calculateRemainingBudget(budgets[i]));
-            return;
-        }
-    }
-
-    printf("Budget not found.\n");
-}
-
-
-float calculateRemainingBudget(Budget budget)
-{
-    return budget.allocatedBudget - budget.expenditure;
 }
 
 
@@ -982,7 +749,8 @@ void budgetReport(void)
     {
         totalAllocated += budgets[i].allocatedBudget;
         totalExpenditure += budgets[i].expenditure;
-        totalRemaining += calculateRemainingBudget(budgets[i]);
+        totalRemaining += budgets[i].allocatedBudget -
+                           budgets[i].expenditure;
     }
 
     printf("\n========== BUDGET REPORT ==========\n");
