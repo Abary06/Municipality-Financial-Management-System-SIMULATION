@@ -46,12 +46,14 @@ float readFloat(void)
 }
 
 
-// Read text that cannot be empty
+// Read text safely
 void readNonEmptyString(char text[], int size)
 {
     do
     {
-        scanf(" %[^\n]", text);
+        fgets(text, size, stdin);
+
+        text[strcspn(text, "\n")] = '\0';
 
         if (strlen(text) == 0)
         {
