@@ -5,10 +5,10 @@ Group Members
 1. Viren Halweendo – 225089521
 2. Jesse Museta – 224050036
 3. Peter Kamati – 224080806
-4. Ester Abraham - 226033317
-5. **[Full Name] – [Student Number]**
-6. **[Full Name] – [Student Number]**
-7. **[Full Name] – [Student Number]**
+4. Ester Abraham – 226033317
+5. Imanuel Adibo – 226172384
+6. left on due date
+7. left (Informed Lecture on 6 & 7 leaving abruptly)
 
 
 ## 1. Project Description
