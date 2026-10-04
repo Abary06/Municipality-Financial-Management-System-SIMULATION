@@ -262,7 +262,7 @@ The complete development history can be viewed through the GitHub commit history
 
 ## 13. GitHub Repository
 
-**Repository:** Abary06/Municipality-Financial-Management-System-SIMULATION: Clear development history of the C code.
+**Repository:** https://github.com/Abary06/Municipality-Financial-Management-System-SIMULATION.git
 
 
 
