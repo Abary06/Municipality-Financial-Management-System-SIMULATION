@@ -4,7 +4,7 @@ Group Members
 
 1. Viren Halweendo – 225089521
 2. Jesse Museta - 224050036
-3. **[Full Name] – [Student Number]**
+3. peter kamati 224080806
 4. **[Full Name] – [Student Number]**
 5. **[Full Name] – [Student Number]**
 6. **[Full Name] – [Student Number]**
